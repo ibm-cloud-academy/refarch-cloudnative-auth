@@ -60,6 +60,7 @@ podTemplate(
                 DOCKER_USER=`cat /var/run/secrets/registry-account/username`
                 DOCKER_PASSWORD=`cat /var/run/secrets/registry-account/password`
                 wget --no-check-certificate https://10.10.1.10:8443/api/cli/icp-linux-amd64
+                export HELM_HOME=$HOME/.helm
                 bx plugin install icp-linux-amd64
                 bx pr login -a https://10.10.1.10:8443 --skip-ssl-validation -u \${DOCKER_USER} -p \${DOCKER_PASSWORD} -c id-cloudcluster-account
                 bx pr cluster-config cloudcluster
