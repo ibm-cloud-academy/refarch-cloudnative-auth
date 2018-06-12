@@ -18,6 +18,9 @@ spring:
   application:
      name: auth-microservice
 
+feign:
+  hystrix:
+    enabled: false
      
 security:
   ignored: /*.css
