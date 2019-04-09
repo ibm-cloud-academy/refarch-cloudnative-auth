@@ -59,14 +59,16 @@ podTemplate(
                 REGISTRY=`cat /var/run/configs/registry-config/registry`
                 DOCKER_USER=`cat /var/run/secrets/registry-account/username`
                 DOCKER_PASSWORD=`cat /var/run/secrets/registry-account/password`
-                wget --no-check-certificate https://10.10.1.10:8443/api/cli/icp-linux-amd64
-                export HELM_HOME=$HOME/.helm
-                bx plugin install icp-linux-amd64
-                bx pr login -a https://10.10.1.10:8443 --skip-ssl-validation -u \${DOCKER_USER} -p \${DOCKER_PASSWORD} -c id-mycluster-account
-                #bx pr cluster-config cloudcluster
-                helm init --client-only
-                helm repo add bluecompute https://raw.githubusercontent.com/ibm-cloud-academy/icp-jenkins-helm-bluecompute/master/charts
-                helm install --tls -n bluecompute-auth --set image.repository=\${REGISTRY}/\${NAMESPACE}/bluecompute-auth --set image.tag=${env.BUILD_NUMBER} --set customer.service.url="http://bluecompute-customer-customer:8080/" bluecompute/auth
+
+                curl -kLo cloudctl https://10.10.1.10:8443/api/cli/cloudctl-linux-amd64
+                curl -kLo helm.tgz https://10.10.1.10:8443/api/cli/helm-linux-amd64.tar.gz
+                tar -xzf helm.tgz
+
+                chmod a+x cloudctl
+                ./cloudctl login -a https://10.10.1.10:8443 -u \${DOCKER_USER} -p \${DOCKER_PASSWORD} -n default
+
+                ./linux-amd64/helm repo add bluecompute https://raw.githubusercontent.com/ibm-cloud-academy/icp-jenkins-helm-bluecompute/master/charts
+                ./linux-amd64/helm install --tls -n bluecompute-auth --set image.repository=\${REGISTRY}/\${NAMESPACE}/bluecompute-auth --set image.tag=${env.BUILD_NUMBER} --set customer.service.url="http://bluecompute-customer-customer:8080/" bluecompute/auth
 
                 """
             }
